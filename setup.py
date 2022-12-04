@@ -2,12 +2,12 @@ from setuptools import setup  # type: ignore
 
 setup(
     name='goecharger',
-    version='1.0.0',
+    version='1.0.1',
     packages=['goecharger'],
     url='https://github.com/bkogler/goecharger',
     license='MIT',
-    author='bkogler',
-    author_email='',
+    author='Bernhard Kogler',
+    author_email='bernhard.kogler@supersonnig.org',
     description='Lightweight Python API for accessing go-eCharger EV wallboxes using local HTTP API v2',
     classifiers=[
         "Development Status :: 5 - Production/Stable",

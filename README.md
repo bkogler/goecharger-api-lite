@@ -23,9 +23,7 @@ Lightweight Python API for accessing modern go-eCharger EV wallboxes using local
 * Set Charger Configuration
 
 # Installation
-Directly this GitHub repository (e.g. clone).
-
-PyPi package for `pip install` command to come ...
+`pip install goecharger-api-lite`
 
 # Usage Examples
 
@@ -38,10 +36,10 @@ charger = GoeCharger("192.168.1.150") # --> change to your IP
 # get full status
 status = charger.get_status(status_type=GoeCharger.STATUS_FULL)
 
-# only get essential status
+# essential status (car state, wallbox state, wallbox error)
 status = charger.get_status(status_type=GoeCharger.STATUS_MINIMUM)
 
-# get status for custom API keys (friendly name, OEM manufacturer) 
+# status for custom API keys (friendly name, OEM manufacturer) 
 status = charger.get_status(("fna", "oem"))
 ````
 
@@ -76,10 +74,10 @@ from goecharger import GoeCharger
 
 charger = GoeCharger("192.168.1.150") # --> change to your IP
 
-# force STOP of charging session
+# STOP current charging session
 charger.set_forced_state(charger.SettableValueEnums.ForcedState.off)
 
-# restart charging after forced STOP
+# restart charging session again
 charger.set_forced_state(charger.SettableValueEnums.ForcedState.neutral)
 ````
 
@@ -87,3 +85,5 @@ charger.set_forced_state(charger.SettableValueEnums.ForcedState.neutral)
 [go-E Website (manufacturer)](https://go-e.com)
 
 [go-E API v2 specification](https://github.com/goecharger/go-eCharger-API-v2/blob/main/introduction-en.md)
+
+[go-E API Keys (query status, set configuration)](https://github.com/goecharger/go-eCharger-API-v2/blob/main/apikeys-en.md)
