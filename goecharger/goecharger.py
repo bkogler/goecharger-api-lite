@@ -24,7 +24,7 @@ class GoeCharger:
         Internal class for mapping status to a more convenient format
         """
 
-        _mappings_car = {
+        __mappings_car = {
             0: "Unknown/Error",
             1: "Idle",
             2: "Charging",
@@ -33,7 +33,7 @@ class GoeCharger:
             5: "Error",
         }
 
-        _mappings_err = {
+        __mappings_err = {
             0: None,
             1: "FiAc",
             2: "FiDc",
@@ -58,7 +58,7 @@ class GoeCharger:
             24: "Reserved24"
         }
 
-        _mappings_frc = {
+        __mappings_frc = {
             0: "neutral",
             1: "off",
             2: "on"
@@ -112,15 +112,15 @@ class GoeCharger:
             match name:
                 # car state
                 case "car":
-                    return "car_state", cls._mappings_car[value]
+                    return "car_state", cls.__mappings_car[value]
 
                 # error code
                 case "err":
-                    return "error", cls._mappings_err[value]
+                    return "error", cls.__mappings_err[value]
 
                 # forced state
                 case "frc":
-                    return "forced_state", cls._mappings_frc[value]
+                    return "forced_state", cls.__mappings_frc[value]
 
                 # energy array
                 case "nrg":
@@ -163,18 +163,18 @@ class GoeCharger:
 
     # minimum status (state of car, error)
     STATUS_MINIMUM = (
-        "car",
-        "err",
-        "frc",
+        "car",  # car_state
+        "err",  # error_code
+        "frc",  # forced_state
     )
 
     # default status
     STATUS_DEFAULT = (
-        "car",
-        "err",
-        "frc",
-        "nrg",
-        "tma",
+        "car",  # car_state
+        "err",  # error_code
+        "frc",  # forced_state
+        "nrg",  # energy
+        "tma",  # temperature
     )
 
     # forced_state
