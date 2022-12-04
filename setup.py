@@ -7,9 +7,9 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='goecharger-api-lite',
-    version='1.0.3',
+    version='1.0.4',
     packages=['goecharger'],
-    url='https://github.com/bkogler/goecharger',
+    url='https://github.com/bkogler/goecharger-api-lite',
     license='MIT',
     author='Bernhard Kogler',
     author_email='bernhard.kogler@supersonnig.org',
@@ -22,7 +22,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    keywords="go-e EV wallbox Gemini flex HOMEfix HOME+ HTTP API v2",
+    keywords="go-e EV wallbox electric charger Gemini flex HOMEfix HOME+ HTTP API v2",
     python_requires='>=3.10',
     install_requires=[
         'requests'
