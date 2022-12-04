@@ -58,7 +58,7 @@ print(json.dumps(status, indent=4))
 
 ## Set Configuration
 
-### Generic API Key (friendly name)
+### Set Generic API Key (friendly name)
 ````python
 from goecharger import GoeCharger
 
