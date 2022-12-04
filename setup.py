@@ -2,7 +2,7 @@ from setuptools import setup  # type: ignore
 
 setup(
     name='goecharger-api-lite',
-    version='1.0.1',
+    version='1.0.2',
     packages=['goecharger'],
     url='https://github.com/bkogler/goecharger',
     license='MIT',
