@@ -82,7 +82,7 @@ charger.set_forced_state(charger.SettableValueEnums.ForcedState.neutral)
 ````
 
 # Links
-[GitHub Repository for goecharger-api-lite](https://github.com/bkogler/goecharger-api-lite)
+[goecharger-api-lite GitHub repository](https://github.com/bkogler/goecharger-api-lite)
 
 [go-E Website (manufacturer)](https://go-e.com)
 
