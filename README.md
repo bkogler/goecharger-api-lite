@@ -1,4 +1,4 @@
-[# goecharger API (lite)](https://github.com/bkogler/goecharger-api-lite)
+# goecharger API (lite)
 Lightweight Python API for accessing modern go-eCharger EV wallboxes using local HTTP API v2
 
 [go-eCharger](https://go-e.com) models:
@@ -82,8 +82,7 @@ charger.set_forced_state(charger.SettableValueEnums.ForcedState.neutral)
 ````
 
 # Links
+[GitHub Repository for goecharger-api-lite](https://github.com/bkogler/goecharger-api-lite)
 [go-E Website (manufacturer)](https://go-e.com)
-
 [go-E API v2 specification](https://github.com/goecharger/go-eCharger-API-v2/blob/main/introduction-en.md)
-
 [go-E API Keys (query status, set configuration)](https://github.com/goecharger/go-eCharger-API-v2/blob/main/apikeys-en.md)
