@@ -1,5 +1,3 @@
-<meta name="google-site-verification" content="yt9ZDteNIOxLoOsjhn3cwyAg2BJElU34qREN01uqmWw" />
-
 # goecharger API (lite)
 Lightweight Python API for accessing modern go-eCharger EV wallboxes using local HTTP API v2
 
