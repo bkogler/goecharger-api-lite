@@ -58,7 +58,35 @@ print(json.dumps(status, indent=4))
 
 ## Set Configuration
 
-### Set Generic API Key (friendly name)
+### Interrupt and restart EV charging session
+````python
+from goecharger import GoeCharger
+
+charger = GoeCharger("192.168.1.150") # --> change to your IP
+
+# STOP current charging session
+charger.set_charging_mode(charger.SettableValueEnums.ChargingMode.off)
+
+# restart charging session again
+charger.set_charging_mode(charger.SettableValueEnums.ChargingMode.neutral)
+````
+
+### Set charge rate (Ampere) and number of phases
+````python
+from goecharger import GoeCharger
+
+charger = GoeCharger("192.168.1.150") # --> change to your IP
+
+# set to 1 phase, 13 ampere
+charger.set_phase_mode(charger.SettableValueEnum.PhaseMode.one)
+charger.set_ampere(13)
+
+# set to 3 phases, 16 ampere
+charger.set_phase_mode(charger.SettableValueEnum.PhaseMode.three)
+charger.set_ampere(16)
+````
+
+### Set Generic API Key
 ````python
 from goecharger import GoeCharger
 
@@ -66,19 +94,6 @@ charger = GoeCharger("192.168.1.150") # --> change to your IP
 
 # set generic API key (friendly name: "myEVCharger")
 charger.set_key("fna", "myEVCharger")
-````
-
-### Interrupt EV charging session
-````python
-from goecharger import GoeCharger
-
-charger = GoeCharger("192.168.1.150") # --> change to your IP
-
-# STOP current charging session
-charger.set_forced_state(charger.SettableValueEnums.ForcedState.off)
-
-# restart charging session again
-charger.set_forced_state(charger.SettableValueEnums.ForcedState.neutral)
 ````
 
 # Links

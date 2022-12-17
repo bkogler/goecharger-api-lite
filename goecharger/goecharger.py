@@ -64,6 +64,17 @@ class GoeCharger:
             2: "on"
         }
 
+        __mappings_psm = {
+            0: "auto",
+            1: "one",
+            2: "three"
+        }
+
+        __mappings_var = {
+            11: "11KW/16A",
+            22: "22KW/32A"
+        }
+
         def __init__(self, response: Dict[str, Any]):
             self.__response = response
 
@@ -110,6 +121,19 @@ class GoeCharger:
             value = element[1]
 
             match name:
+
+                # ampere (currently possible rate)
+                case "acu":
+                    return "ampere", value
+
+                # ampere (device maximum)
+                case "ama":
+                    return "ampere_device_maximum", value
+
+                # ampere (allowed rate)
+                case "amp":
+                    return "ampere_allowed", value
+
                 # car state
                 case "car":
                     return "car_state", cls.__mappings_car[value]
@@ -120,7 +144,7 @@ class GoeCharger:
 
                 # forced state
                 case "frc":
-                    return "forced_state", cls.__mappings_frc[value]
+                    return "charging_mode", cls.__mappings_frc[value]
 
                 # energy array
                 case "nrg":
@@ -150,9 +174,17 @@ class GoeCharger:
                         }
                     }
 
+                # phase_mode
+                case "psm":
+                    return "phase_mode", cls.__mappings_psm[value]
+
                 # device temperature
                 case "tma":
                     return "temperature", sum(value)/len(value) if len(value) > 0 else None
+
+                # device model (11KW / 22KW)
+                case "var":
+                    return "device_model", cls.__mappings_var[value]
 
                 # no mapping specified, return unchanged value
                 case _:
@@ -165,28 +197,34 @@ class GoeCharger:
     STATUS_MINIMUM = (
         "car",  # car_state
         "err",  # error_code
-        "frc",  # forced_state
+        "frc",  # charging_mode
     )
 
     # default status
     STATUS_DEFAULT = (
+        "acu",  # ampere
         "car",  # car_state
         "err",  # error_code
-        "frc",  # forced_state
+        "frc",  # charging_mode
         "nrg",  # energy
+        "psm",  # phase_mode
         "tma",  # temperature
+        "var",  # device_model
     )
 
-    # forced_state
-    class SettableValueEnums:
+    class SettableValueEnum:
         """
         Predefined parameters which can be set on GoeCharger device
         """
 
-        class ForcedState(Enum):
+        class ChargingMode(Enum):
             neutral = 0
             off = 1
             on = 2
+
+        class PhaseMode(Enum):
+            one = 1
+            three = 2
 
     def __init__(self, host: str, timeout: Optional[float] = 3.0) -> None:
         """
@@ -201,6 +239,8 @@ class GoeCharger:
 
         self.__host = host
         self.__timeout = timeout
+
+        self.__device_model = ""
 
     def __create_status_request(self, filter_elements: Union[str, Tuple[str, ...]] | None = None) -> str:
         """
@@ -235,11 +275,13 @@ class GoeCharger:
 
         return url + value_json
 
-    def __send_request(self, request: str) -> Dict[str, Any]:
+    def __send_request(self, request: str, ignore_server_error: bool = False) -> Dict[str, Any]:
         """
         Internal function for sending a prepared request (URL) to goeCharger device.
         Raises an GoeChargerError on any unexpected error or when local HTTP v2 API is not enabled on device
         :param request: request to be sent
+        :param ignore_server_error: if set, don't raise a GoeChargerError on HTTP error 500 (useful when setting
+                                     api keys)
         :return:
         """
         try:
@@ -249,14 +291,17 @@ class GoeCharger:
             if response.status_code == 404:
                 raise GoeChargerError("HTTP API v2 not enabled on GoeCharger device. Please enable")
 
-            response.raise_for_status()
-        except requests.exceptions.RequestException:
-            raise GoeChargerError("Error communicating with GoeCharger device")
+            # don't raise GoeChargerError on status_code 500, if so requested
+            if response.status_code != 500 and not ignore_server_error:
+                response.raise_for_status()
+
+        except requests.exceptions.RequestException as e:
+            raise GoeChargerError("Error communicating with GoeCharger device") from e
 
         try:
             response_data = response.json()
-        except requests.exceptions.JSONDecodeError:
-            raise GoeChargerError("Error parsing GoeCharger JSON data")
+        except requests.exceptions.JSONDecodeError as e:
+            raise GoeChargerError("Error parsing GoeCharger JSON data") from e
 
         return response_data
 
@@ -271,6 +316,30 @@ class GoeCharger:
         response = self.__send_request(self.__create_status_request(status_type))
         return self._StatusMapper(response).map_status_response()
 
+    def get_ampere(self) -> Dict[str, int]:
+        """
+        Returns maximum current setting for car in Ampere
+        :return:
+        """
+        response = self.__send_request(self.__create_status_request("amp"))
+        return self._StatusMapper(response).map_status_response()
+
+    def get_charging_mode(self) -> Dict[str, int]:
+        """
+        Returns currently active charging mode for GoeCharger device
+
+        :return:
+        """
+        response = self.__send_request(self.__create_status_request("frc"))
+        return self._StatusMapper(response).map_status_response()
+
+    def get_phase_mode(self) -> Dict[str, SettableValueEnum.PhaseMode]:
+        """
+        Returns phase mode of GoeCharger device (1 phase / 3 phases / neutral)
+        """
+        response = self.__send_request(self.__create_status_request("psm"))
+        return self._StatusMapper(response).map_status_response()
+
     def set_key(self, key: str, value: Any) -> Dict[str, Any]:
         """
         Low level function to generically set a key of GoeCharger device
@@ -279,18 +348,61 @@ class GoeCharger:
         :param value: value for key to set
         :return: Response received by device
         """
-        response = self.__send_request(self.__create_key_set_request(key, value))
+        response = self.__send_request(self.__create_key_set_request(key, value), ignore_server_error=True)
         return response
 
-    def set_forced_state(self, value: SettableValueEnums.ForcedState) -> None:
+    def set_ampere(self, value: int | str) -> None:
         """
-        Set's value for forced_state (e.g. to force stop or start a charging session for plugged-in EV)
+        Sets maximum current setting for car in Ampere
 
-        :param value: forced state to set
+        :param value: integer value between 6 and ampere_device_maximum (16 / 32)
+        :return:
+        """
+
+        # check data type of parameter
+        if not isinstance(value, int):
+            try:
+                value = int(value)
+            except ValueError:
+                raise GoeChargerError("Ampere value needs to be an integer")
+
+        if not self.__device_model:
+            self.__device_model = self.get_status("var")["device_model"]
+
+        # check for 32A values on 16A devices
+        if self.__device_model.find("11") != -1 and value > 16:
+            raise GoeChargerError(
+                f"Ampere value of '{value}' too big for charger device_model '{self.__device_model}'")
+
+        # set value
+        key = "amp"
+        response = self.set_key(key, value)
+
+        if response.get(key) is not True:
+            raise GoeChargerError(f"Error setting ampere, got invalid response with content '{response}'")
+
+    def set_charging_mode(self, value: SettableValueEnum.ChargingMode) -> None:
+        """
+        Sets value for charging_mode (e.g. to force stop or start a charging session for plugged-in EV)
+
+        :param value: charging_mode to set
         :return:
         """
         key = "frc"
         response = self.set_key(key, value.value)
 
-        if not response.get(key):
+        if response.get(key) is not True:
+            raise GoeChargerError(f"Error setting forced_state, got invalid response with content '{response}'")
+
+    def set_phase_mode(self, value: SettableValueEnum.PhaseMode) -> None:
+        """
+        Sets phase mode to 1 or 3 phase(s)
+
+        :param value: phase mode to set
+        :return:
+        """
+        key = "psm"
+        response = self.set_key(key, value.value)
+
+        if response.get(key) is not True:
             raise GoeChargerError(f"Error setting forced_state, got invalid response with content '{response}'")
