@@ -71,7 +71,7 @@ charger.set_charging_mode(charger.SettableValueEnums.ChargingMode.off)
 charger.set_charging_mode(charger.SettableValueEnums.ChargingMode.neutral)
 ````
 
-### Set charge rate (Ampere) and number of phases
+### Set charge rate (ampere) and number of phases
 ````python
 from goecharger import GoeCharger
 
