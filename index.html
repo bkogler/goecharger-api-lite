@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+    <title>goecharger API (lite) | goecharger-api-lite</title>
+    <meta name="generator" content="Jekyll v3.9.2"/>
+    <meta property="og:title" content="goecharger API (lite)"/>
+    <meta property="og:locale" content="en_US"/>
+    <meta name="description" content="Lightweight Python API for accessing go-eCharger EV wall box using local HTTP API v2"/>
+    <meta property="og:description" content="Lightweight Python API for accessing go-eCharger EV wall box using local HTTP API v2"/>
+    <link rel="canonical" href="https://bkogler.github.io/goecharger-api-lite/"/>
+    <meta property="og:url" content="https://bkogler.github.io/goecharger-api-lite/"/>
+    <meta property="og:site_name" content="goecharger-api-lite"/>
+    <meta property="og:type" content="website"/>
+    <meta name="twitter:card" content="summary"/>
+    <meta property="twitter:title" content="goecharger API (lite)"/>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebSite","description":"Lightweight Python API for accessing go-eCharger EV wall box using local HTTP API v2","headline":"goecharger API (lite)","name":"goecharger-api-lite","url":"https://bkogler.github.io/goecharger-api-lite/"}</script>
+    <!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/goecharger-api-lite/assets/css/style.css?v=1d3bb47e95cfd1ad4bec2690d993b67439cfe3cb">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+    <!-- Setup Google Analytics -->
+
+    <!-- You can set your favicon here -->
+    <!-- link rel="shortcut icon" type="image/x-icon" href="/goecharger-api-lite/favicon.ico" -->
+
+    <!-- end custom head snippets -->
+
+</head>
+<body>
+    <div class="container-lg px-3 my-5 markdown-body">
+
+        <h1>
+            <a href="https://bkogler.github.io/goecharger-api-lite/">goecharger-api-lite</a>
+        </h1>
+
+        <h1 id="goecharger-api-lite">goecharger API (lite)</h1>
+        <p>Lightweight Python API for accessing modern go-eCharger EV wallboxes using local HTTP API v2</p>
+
+        <p>
+            <a href="https://go-e.com">go-eCharger</a>
+             models:
+        </p>
+        <ul>
+            <li>Gemini</li>
+            <li>Gemini flex</li>
+            <li>HOMEfix</li>
+            <li>HOME+</li>
+        </ul>
+
+        <h1 id="table-of-contents">Table of contents</h1>
+        <!-- TOC -->
+        <ul>
+            <li>
+                <a href="#features">Features</a>
+            </li>
+            <li>
+                <a href="#installation">Installation</a>
+            </li>
+            <li>
+                <a href="#usage-examples">Usage Examples</a>
+                <ul>
+                    <li>
+                        <a href="#query-status">Query Status</a>
+                        <ul>
+                            <li>
+                                <a href="#pretty-print-status">Pretty Print Status</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#set-configuration">Set Configuration</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#links">Links</a>
+                <!-- TOC -->
+            </li>
+        </ul>
+
+        <h1 id="features">Features</h1>
+        <ul>
+            <li>Query Charger Status</li>
+            <li>Set Charger Configuration</li>
+        </ul>
+
+        <h1 id="installation">Installation</h1>
+        <p>
+            <code class="language-plaintext highlighter-rouge">pip install goecharger-api-lite</code>
+        </p>
+
+        <h1 id="usage-examples">Usage Examples</h1>
+
+        <h2 id="query-status">Query Status</h2>
+        <div class="language-python highlighter-rouge">
+            <div class="highlight">
+                <pre class="highlight">
+                    <code>
+                        <span class="kn">from</span>
+                        <span class="nn">goecharger</span>
+                        <span class="kn">import</span>
+                        <span class="n">GoeCharger</span>
+
+                        <span class="n">charger</span>
+                        <span class="o">=</span>
+                        <span class="n">GoeCharger</span>
+                        <span class="p">(</span>
+                        <span class="s">"192.168.1.150"</span>
+                        <span class="p">)</span>
+                        <span class="c1"># --&gt; change to your IP
+                        </span>
+                        <span class="c1"># get full status
+                        </span>
+                        <span class="n">status</span>
+                        <span class="o">=</span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">get_status</span>
+                        <span class="p">(</span>
+                        <span class="n">status_type</span>
+                        <span class="o">=</span>
+                        <span class="n">GoeCharger</span>
+                        <span class="p">.</span>
+                        <span class="n">STATUS_FULL</span>
+                        <span class="p">)</span>
+
+                        <span class="c1"># essential status (car state, wallbox state, wallbox error)
+                        </span>
+                        <span class="n">status</span>
+                        <span class="o">=</span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">get_status</span>
+                        <span class="p">(</span>
+                        <span class="n">status_type</span>
+                        <span class="o">=</span>
+                        <span class="n">GoeCharger</span>
+                        <span class="p">.</span>
+                        <span class="n">STATUS_MINIMUM</span>
+                        <span class="p">)</span>
+
+                        <span class="c1"># status for custom API keys (friendly name, OEM manufacturer) 
+                        </span>
+                        <span class="n">status</span>
+                        <span class="o">=</span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">get_status</span>
+                        <span class="p">((</span>
+                        <span class="s">"fna"</span>
+                        <span class="p">,</span>
+                        <span class="s">"oem"</span>
+                        <span class="p">))</span>
+                    </code>
+                </pre>
+            </div>
+        </div>
+
+        <h4 id="hint-pretty-print-status">Hint: Pretty Print Status</h4>
+        <div class="language-python highlighter-rouge">
+            <div class="highlight">
+                <pre class="highlight">
+                    <code>
+                        <span class="kn">import</span>
+                        <span class="nn">json</span>
+
+                        <span class="k">print</span>
+                        <span class="p">(</span>
+                        <span class="n">json</span>
+                        <span class="p">.</span>
+                        <span class="n">dumps</span>
+                        <span class="p">(</span>
+                        <span class="n">status</span>
+                        <span class="p">,</span>
+                        <span class="n">indent</span>
+                        <span class="o">=</span>
+                        <span class="mi">4</span>
+                        <span class="p">))</span>
+                    </code>
+                </pre>
+            </div>
+        </div>
+        <div class="language-plaintext highlighter-rouge">
+            <div class="highlight">
+                <pre class="highlight">
+                    <code>{
+                        "fna": "myEVCharger",
+                        "oem": "go-e"
+                    }
+                    </code>
+                </pre>
+            </div>
+        </div>
+
+        <h2 id="set-configuration">Set Configuration</h2>
+
+        <h3 id="interrupt-and-restart-ev-charging-session">Interrupt and restart EV charging session</h3>
+        <div class="language-python highlighter-rouge">
+            <div class="highlight">
+                <pre class="highlight">
+                    <code>
+                        <span class="kn">from</span>
+                        <span class="nn">goecharger</span>
+                        <span class="kn">import</span>
+                        <span class="n">GoeCharger</span>
+
+                        <span class="n">charger</span>
+                        <span class="o">=</span>
+                        <span class="n">GoeCharger</span>
+                        <span class="p">(</span>
+                        <span class="s">"192.168.1.150"</span>
+                        <span class="p">)</span>
+                        <span class="c1"># --&gt; change to your IP
+                        </span>
+                        <span class="c1"># STOP current charging session
+                        </span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">set_charging_mode</span>
+                        <span class="p">(</span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">SettableValueEnums</span>
+                        <span class="p">.</span>
+                        <span class="n">ChargingMode</span>
+                        <span class="p">.</span>
+                        <span class="n">off</span>
+                        <span class="p">)</span>
+
+                        <span class="c1"># restart charging session again
+                        </span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">set_charging_mode</span>
+                        <span class="p">(</span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">SettableValueEnums</span>
+                        <span class="p">.</span>
+                        <span class="n">ChargingMode</span>
+                        <span class="p">.</span>
+                        <span class="n">neutral</span>
+                        <span class="p">)</span>
+                    </code>
+                </pre>
+            </div>
+        </div>
+
+        <h3 id="set-charge-rate-ampere-and-number-of-phases">Set charge rate (ampere) and number of phases</h3>
+        <div class="language-python highlighter-rouge">
+            <div class="highlight">
+                <pre class="highlight">
+                    <code>
+                        <span class="kn">from</span>
+                        <span class="nn">goecharger</span>
+                        <span class="kn">import</span>
+                        <span class="n">GoeCharger</span>
+
+                        <span class="n">charger</span>
+                        <span class="o">=</span>
+                        <span class="n">GoeCharger</span>
+                        <span class="p">(</span>
+                        <span class="s">"192.168.1.150"</span>
+                        <span class="p">)</span>
+                        <span class="c1"># --&gt; change to your IP
+                        </span>
+                        <span class="c1"># set to 1 phase, 13 ampere
+                        </span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">set_phase_mode</span>
+                        <span class="p">(</span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">SettableValueEnum</span>
+                        <span class="p">.</span>
+                        <span class="n">PhaseMode</span>
+                        <span class="p">.</span>
+                        <span class="n">one</span>
+                        <span class="p">)</span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">set_ampere</span>
+                        <span class="p">(</span>
+                        <span class="mi">13</span>
+                        <span class="p">)</span>
+
+                        <span class="c1"># set to 3 phases, 16 ampere
+                        </span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">set_phase_mode</span>
+                        <span class="p">(</span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">SettableValueEnum</span>
+                        <span class="p">.</span>
+                        <span class="n">PhaseMode</span>
+                        <span class="p">.</span>
+                        <span class="n">three</span>
+                        <span class="p">)</span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">set_ampere</span>
+                        <span class="p">(</span>
+                        <span class="mi">16</span>
+                        <span class="p">)</span>
+                    </code>
+                </pre>
+            </div>
+        </div>
+
+        <h3 id="set-generic-api-key">Set Generic API Key</h3>
+        <div class="language-python highlighter-rouge">
+            <div class="highlight">
+                <pre class="highlight">
+                    <code>
+                        <span class="kn">from</span>
+                        <span class="nn">goecharger</span>
+                        <span class="kn">import</span>
+                        <span class="n">GoeCharger</span>
+
+                        <span class="n">charger</span>
+                        <span class="o">=</span>
+                        <span class="n">GoeCharger</span>
+                        <span class="p">(</span>
+                        <span class="s">"192.168.1.150"</span>
+                        <span class="p">)</span>
+                        <span class="c1"># --&gt; change to your IP
+                        </span>
+                        <span class="c1"># set generic API key (friendly name: "myEVCharger")
+                        </span>
+                        <span class="n">charger</span>
+                        <span class="p">.</span>
+                        <span class="n">set_key</span>
+                        <span class="p">(</span>
+                        <span class="s">"fna"</span>
+                        <span class="p">,</span>
+                        <span class="s">"myEVCharger"</span>
+                        <span class="p">)</span>
+                    </code>
+                </pre>
+            </div>
+        </div>
+
+        <h1 id="links">Links</h1>
+        <p>
+            <a href="https://github.com/bkogler/goecharger-api-lite">goecharger-api-lite GitHub repository</a>
+        </p>
+
+        <p>
+            <a href="https://go-e.com">go-E Website (manufacturer)</a>
+        </p>
+
+        <p>
+            <a href="https://github.com/goecharger/go-eCharger-API-v2/blob/main/introduction-en.md">go-E API v2 specification</a>
+        </p>
+
+        <p>
+            <a href="https://github.com/goecharger/go-eCharger-API-v2/blob/main/apikeys-en.md">go-E API Keys (query status, set configuration)</a>
+        </p>
+
+        <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+
+                    This site is open source. 
+            <a href="https://github.com/bkogler/goecharger-api-lite/edit/main/README.md">Improve this page</a>
+            .
+                  
+        </div>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>
+    anchors.add();
+    </script>
+</body>
+</html>
