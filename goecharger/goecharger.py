@@ -1,3 +1,4 @@
+import inspect
 import json
 from collections import OrderedDict
 from enum import Enum
@@ -305,6 +306,40 @@ class GoeCharger:
 
         return response_data
 
+    def __get_status(self, status_type: str | Tuple[str, ...]) -> Dict[str, Any]:
+        """
+        Internal method for getting status info from GoeCharger device
+
+        :param status_type: Single key name or tuple of key names to request from device.
+        :return:
+        """
+        response = self.__send_request(self.__create_status_request(status_type))
+        return self._StatusMapper(response).map_status_response()
+
+    def __set_key(self, key: str, value: Any) -> None:
+        """
+        Internal method for setting keys on GoeCharger device
+
+        :param key: key to set
+        :param key: value for key to set
+        """
+        response = self.__send_request(self.__create_key_set_request(key, value), ignore_server_error=True)
+
+        if response is None or response.get(key) is not True:
+            stack_info = inspect.stack()
+            caller_method_name = stack_info[1][3]
+
+            # call from generic set_key method: print name of key in Error
+            if caller_method_name == "set_key":
+                error_message_setting_name = key
+
+            # call from a shortcut method: print name of shortcut-method in Error
+            else:
+                key_name = caller_method_name[4:]
+                error_message_setting_name = key_name
+
+            raise GoeChargerError(f"Error setting '{error_message_setting_name}', got invalid response: '{response}'")
+
     def get_status(self, status_type: str | Tuple[str, ...] = STATUS_DEFAULT) -> Dict[str, Any]:
         """
         Returns status of GoeCharger
@@ -313,16 +348,14 @@ class GoeCharger:
             If not set, GoeCharger.STATUS_DEFAULT is used as selection
         :return:
         """
-        response = self.__send_request(self.__create_status_request(status_type))
-        return self._StatusMapper(response).map_status_response()
+        return self.__get_status(status_type)
 
     def get_ampere(self) -> Dict[str, int]:
         """
         Returns maximum current setting for car in Ampere
         :return:
         """
-        response = self.__send_request(self.__create_status_request("amp"))
-        return self._StatusMapper(response).map_status_response()
+        return self.__get_status("amp")
 
     def get_charging_mode(self) -> Dict[str, int]:
         """
@@ -330,26 +363,24 @@ class GoeCharger:
 
         :return:
         """
-        response = self.__send_request(self.__create_status_request("frc"))
-        return self._StatusMapper(response).map_status_response()
+        return self.__get_status("frc")
 
     def get_phase_mode(self) -> Dict[str, SettableValueEnum.PhaseMode]:
         """
         Returns phase mode of GoeCharger device (1 phase / 3 phases / neutral)
         """
-        response = self.__send_request(self.__create_status_request("psm"))
-        return self._StatusMapper(response).map_status_response()
+        return self.__get_status("psm")
 
-    def set_key(self, key: str, value: Any) -> Dict[str, Any]:
+    def set_key(self, key: str, value: Any) -> None:
         """
-        Low level function to generically set a key of GoeCharger device
+        Generic (low-level) function for setting a GoeCharger key to a value.
+        For possible keys see official API documentation for device
 
         :param key: name of key to set
         :param value: value for key to set
         :return: Response received by device
         """
-        response = self.__send_request(self.__create_key_set_request(key, value), ignore_server_error=True)
-        return response
+        self.__set_key(key, value)
 
     def set_ampere(self, value: int | str) -> None:
         """
@@ -375,11 +406,7 @@ class GoeCharger:
                 f"Ampere value of '{value}' too big for charger device_model '{self.__device_model}'")
 
         # set value
-        key = "amp"
-        response = self.set_key(key, value)
-
-        if response.get(key) is not True:
-            raise GoeChargerError(f"Error setting ampere, got invalid response with content '{response}'")
+        self.__set_key("amp", value)
 
     def set_charging_mode(self, value: SettableValueEnum.ChargingMode) -> None:
         """
@@ -388,11 +415,7 @@ class GoeCharger:
         :param value: charging_mode to set
         :return:
         """
-        key = "frc"
-        response = self.set_key(key, value.value)
-
-        if response.get(key) is not True:
-            raise GoeChargerError(f"Error setting forced_state, got invalid response with content '{response}'")
+        self.__set_key("frc", value.value)
 
     def set_phase_mode(self, value: SettableValueEnum.PhaseMode) -> None:
         """
@@ -401,8 +424,4 @@ class GoeCharger:
         :param value: phase mode to set
         :return:
         """
-        key = "psm"
-        response = self.set_key(key, value.value)
-
-        if response.get(key) is not True:
-            raise GoeChargerError(f"Error setting forced_state, got invalid response with content '{response}'")
+        self.__set_key("psm", value.value)
