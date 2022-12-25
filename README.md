@@ -1,4 +1,4 @@
-# goecharger API (lite)
+# [goecharger API (lite)](https://github.com/bkogler/goecharger-api-lite)
 Lightweight Python API for accessing modern go-eCharger EV wallboxes using local HTTP API v2
 
 [go-eCharger](https://go-e.com) models:
