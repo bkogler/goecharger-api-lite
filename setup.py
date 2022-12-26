@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='goecharger-api-lite',
-    version='1.0.6',
+    version='1.1.0',
     packages=['goecharger'],
     url='https://github.com/bkogler/goecharger-api-lite',
     license='MIT',
@@ -25,6 +25,6 @@ setup(
     keywords="go-e EV wallbox electric charger Gemini flex HOMEfix HOME+ HTTP API v2",
     python_requires='>=3.10',
     install_requires=[
-        'requests'
+        'aiohttp',
     ]
 )

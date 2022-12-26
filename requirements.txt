@@ -1,3 +1,2 @@
 setuptools==65.6.3
-requests==2.28.1
-types-requests==2.28.11.5
+aiohttp==3.8.3

@@ -1,10 +1,12 @@
+import asyncio
 import inspect
 import json
 from collections import OrderedDict
 from enum import Enum
-from typing import Union, Tuple, Any, Dict, Optional
+from typing import Union, Tuple, Any, Dict, Optional, Coroutine
 
-import requests
+import aiohttp
+from aiohttp import ClientTimeout, ClientError, ContentTypeError
 
 from goecharger.excpetion import GoeChargerError
 
@@ -243,6 +245,36 @@ class GoeCharger:
 
         self.__device_model = ""
 
+        self.__initialize_async_environment()
+
+    def __initialize_async_environment(self):
+        """
+        Internal method which brings preparations for async backend and HTTP requests in place
+        :return:
+        """
+
+        # save event loop for further usage with later async calls
+        self.__async_loop = asyncio.get_event_loop_policy().get_event_loop()
+
+        # prepare AIOHTTP client session (automatically uses the asyncio event loop of the current thread)
+        self.__aiohttp_client_session = aiohttp.ClientSession(timeout=ClientTimeout(total=self.__timeout))
+
+    def __run_async(self, coroutine: Coroutine) -> Any:
+        """
+        Internal method to run a coroutine using the instance's async context
+
+        :return:
+        """
+        return self.__async_loop.run_until_complete(coroutine)
+
+    def __del__(self):
+        """
+        Housekeeping: Close AIOHTTP client session
+        :return:
+        """
+        if self.__aiohttp_client_session:
+            self.__run_async(self.__aiohttp_client_session.close())
+
     def __create_status_request(self, filter_elements: Union[str, Tuple[str, ...]] | None = None) -> str:
         """
         Creates URL for a status request
@@ -286,22 +318,22 @@ class GoeCharger:
         :return:
         """
         try:
-            response = requests.get(request, timeout=self.__timeout)
+            response = self.__run_async(self.__aiohttp_client_session.get(url=request))
 
             # extra check for 404 error --> HTTP v2 API not enabled on device
-            if response.status_code == 404:
+            if response.status == 404:
                 raise GoeChargerError("HTTP API v2 not enabled on GoeCharger device. Please enable")
 
             # don't raise GoeChargerError on status_code 500, if so requested
-            if response.status_code != 500 and not ignore_server_error:
+            if response.status != 500 and not ignore_server_error:
                 response.raise_for_status()
 
-        except requests.exceptions.RequestException as e:
+        except ClientError as e:
             raise GoeChargerError("Error communicating with GoeCharger device") from e
 
         try:
-            response_data = response.json()
-        except requests.exceptions.JSONDecodeError as e:
+            response_data = self.__run_async(response.json())
+        except ContentTypeError as e:
             raise GoeChargerError("Error parsing GoeCharger JSON data") from e
 
         return response_data
