@@ -21,6 +21,7 @@ Lightweight Python API for accessing modern go-eCharger EV wallboxes using local
 # Features
 * Query Charger Status
 * Set Charger Configuration
+* Uses asynchronous aiohttp requests for communication
 
 # Installation
 `pip install goecharger-api-lite`
