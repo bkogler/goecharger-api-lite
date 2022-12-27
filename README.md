@@ -100,6 +100,8 @@ charger.set_key("fna", "myEVCharger")
 # Links
 [goecharger-api-lite GitHub repository](https://github.com/bkogler/goecharger-api-lite)
 
+[goecharger-api-lite on Pypi](https://pypi.org/project/goecharger-api-lite)
+
 [go-E Website (manufacturer)](https://go-e.com)
 
 [go-E API v2 specification](https://github.com/goecharger/go-eCharger-API-v2/blob/main/introduction-en.md)
