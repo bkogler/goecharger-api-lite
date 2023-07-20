@@ -1,2 +1,2 @@
 setuptools==65.6.3
-aiohttp==3.8.3
+aiohttp==3.8.5
