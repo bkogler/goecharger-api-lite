@@ -8,7 +8,7 @@ from typing import Union, Tuple, Any, Dict, Optional, Coroutine
 import aiohttp
 from aiohttp import ClientTimeout, ClientError, ContentTypeError
 
-from goecharger_api_lite.excpetion import GoeChargerError
+from goecharger_api_lite.exception import GoeChargerError
 
 
 class GoeCharger:

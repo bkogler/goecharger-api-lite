@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='goecharger-api-lite',
-    version='1.1.1',
+    version='1.5.0',
     packages=['goecharger_api_lite'],
     url='https://github.com/bkogler/goecharger-api-lite',
     license='MIT',
@@ -26,5 +26,6 @@ setup(
     python_requires='>=3.10',
     install_requires=[
         'aiohttp',
+        'aiodns',
     ]
 )
