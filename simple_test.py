@@ -1,6 +1,6 @@
 import json
 
-from goecharger.goecharger import GoeCharger
+from goecharger_api_lite.goecharger_api_lite import GoeCharger
 
 charger = GoeCharger("goecharger.lan")
 
