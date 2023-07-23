@@ -30,7 +30,7 @@ Lightweight Python API for accessing modern go-eCharger EV wallboxes using local
 
 ## Query Status
 ````python
-from goecharger import GoeCharger
+from goecharger_api_lite import GoeCharger
 
 charger = GoeCharger("192.168.1.150") # --> change to your IP
 
@@ -61,7 +61,7 @@ print(json.dumps(status, indent=4))
 
 ### Interrupt and restart EV charging session
 ````python
-from goecharger import GoeCharger
+from goecharger_api_lite import GoeCharger
 
 charger = GoeCharger("192.168.1.150") # --> change to your IP
 
@@ -74,7 +74,7 @@ charger.set_charging_mode(charger.SettableValueEnums.ChargingMode.neutral)
 
 ### Set charge rate (ampere) and number of phases
 ````python
-from goecharger import GoeCharger
+from goecharger_api_lite import GoeCharger
 
 charger = GoeCharger("192.168.1.150") # --> change to your IP
 
@@ -89,7 +89,7 @@ charger.set_ampere(16)
 
 ### Set Generic API Key
 ````python
-from goecharger import GoeCharger
+from goecharger_api_lite import GoeCharger
 
 charger = GoeCharger("192.168.1.150") # --> change to your IP
 
