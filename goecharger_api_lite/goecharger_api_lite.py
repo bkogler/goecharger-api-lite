@@ -206,6 +206,7 @@ class GoeCharger:
     # default status
     STATUS_DEFAULT = (
         "acu",  # ampere
+        "ama",  # ampere_max_limit
         "car",  # car_state
         "err",  # error_code
         "frc",  # charging_mode
@@ -457,3 +458,30 @@ class GoeCharger:
         :return:
         """
         self.__set_key("psm", value.value)
+
+    def set_absolute_max_current(self, value: int | str) -> None:
+        """
+        Sets absolute maximum current setting for the device in Ampere
+
+        :param value: integer value between 0 and ampere_device_maximum (16 / 32)
+        :return:
+        """
+
+        # check data type of parameter
+        if not isinstance(value, int):
+            try:
+                value = int(value)
+            except ValueError:
+                raise GoeChargerError("Ampere value needs to be an integer")
+
+        if not self.__device_model:
+            self.__device_model = self.get_status("var")["device_model"]
+
+        # check for 32A values on 16A devices
+        if self.__device_model.find("11") != -1 and value > 16:
+            raise GoeChargerError(
+                f"Ampere value of '{value}' too big for charger device_model '{self.__device_model}'")
+
+        # set value
+        self.__set_key("ama", value)
+
