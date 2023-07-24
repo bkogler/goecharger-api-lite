@@ -432,6 +432,13 @@ class GoeCharger:
         """
         return self.__get_status("ama")
 
+    def get_cable_lock_mode(self) -> Dict[str, SettableValueEnum.CableLockMode]:
+        """
+        Returns cable lock mode
+        :return:
+        """
+        return self.__get_status("ust")
+
     def set_key(self, key: str, value: Any) -> None:
         """
         Generic (low-level) function for setting a GoeCharger key to a value.
