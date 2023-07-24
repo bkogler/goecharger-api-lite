@@ -109,6 +109,19 @@ charger.set_cable_lock_mode(charger.SettableValueEnum.CableLockMode.automatic)
 charger.set_cable_lock_mode(charger.SettableValueEnum.CableLockMode.locked)
 ````
 
+### Set charge limit
+````python
+from goecharger_api_lite import GoeCharger
+
+charger = GoeCharger("192.168.1.150") # --> change to your IP
+
+# set charge limit to 2.5 kWh
+charger.set_charge_limit(2500)
+
+# Disable charge limit
+charger.set_charge_limit(None)
+````
+
 ### Set Generic API Key
 ````python
 from goecharger_api_lite import GoeCharger

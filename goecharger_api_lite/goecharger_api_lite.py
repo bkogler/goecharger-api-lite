@@ -147,6 +147,9 @@ class GoeCharger:
                 case "car":
                     return "car_state", cls.__mappings_car[value]
 
+                case "dwo":
+                    return "charge_limit", value
+
                 # error code
                 case "err":
                     return "error", cls.__mappings_err[value]
@@ -218,6 +221,7 @@ class GoeCharger:
         "acu",  # ampere
         "ama",  # ampere_max_limit
         "car",  # car_state
+        "dwo",  # charge_limit
         "err",  # error_code
         "frc",  # charging_mode
         "nrg",  # energy
@@ -510,3 +514,21 @@ class GoeCharger:
         :return:
         """
         self.__set_key("ust", value.value)
+
+    def set_charge_limit(self, chargeLimit: float | str | None) -> None:
+        """
+        Sets charge limit in Wh or null to disable charge limit
+
+        :param value: charge limit to set in Wh
+        :return:
+        """
+
+        # check data type of parameter
+        if not isinstance(chargeLimit, float):
+            if chargeLimit is not None:
+                try:
+                    chargeLimit = float(chargeLimit)
+                except ValueError:
+                    raise GoeChargerError("Wh needs to be an integer")
+
+        self.__set_key("dwo", chargeLimit)
