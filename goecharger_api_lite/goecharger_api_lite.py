@@ -227,6 +227,7 @@ class GoeCharger:
             on = 2
 
         class PhaseMode(Enum):
+            auto = 0
             one = 1
             three = 2
 
@@ -452,7 +453,7 @@ class GoeCharger:
 
     def set_phase_mode(self, value: SettableValueEnum.PhaseMode) -> None:
         """
-        Sets phase mode to 1 or 3 phase(s)
+        Sets phase mode to auto, 1 or 3 phase(s)
 
         :param value: phase mode to set
         :return:
