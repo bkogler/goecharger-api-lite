@@ -86,10 +86,11 @@ charger.set_ampere(13)
 charger.set_phase_mode(charger.SettableValueEnum.PhaseMode.three)
 charger.set_ampere(16)
 
-# Set phase mode to auto
+# set phase mode to auto
 charger.set_phase_mode(charger.SettableValueEnum.PhaseMode.auto)
 
 # set maximum possible charge rate of the charger (ampere)
+# this will limit the maximum charge rate that can be set by the user, i.e. via the app
 charger.set_absolute_max_current(10)
 ````
 
