@@ -85,6 +85,9 @@ charger.set_ampere(13)
 # set to 3 phases, 16 ampere
 charger.set_phase_mode(charger.SettableValueEnum.PhaseMode.three)
 charger.set_ampere(16)
+
+# set maximum possible charge rate of the charger (ampere)
+charger.set_absolute_max_current(10)
 ````
 
 ### Set Generic API Key
