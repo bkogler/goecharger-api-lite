@@ -73,6 +73,12 @@ class GoeCharger:
             2: "three"
         }
 
+        __mappings_ust = {
+            0 : "unlock car first",
+            1 : "automatic",
+            2 : "locked"
+        }
+
         __mappings_var = {
             11: "11KW/16A",
             22: "22KW/32A"
@@ -185,6 +191,10 @@ class GoeCharger:
                 case "tma":
                     return "temperature", sum(value)/len(value) if len(value) > 0 else None
 
+                # cable_lock_mode
+                case "ust":
+                    return "cable_lock_mode", cls.__mappings_ust[value]
+
                 # device model (11KW / 22KW)
                 case "var":
                     return "device_model", cls.__mappings_var[value]
@@ -213,6 +223,7 @@ class GoeCharger:
         "nrg",  # energy
         "psm",  # phase_mode
         "tma",  # temperature
+        "ust",  # cable_lock_mode
         "var",  # device_model
     )
 
@@ -230,6 +241,11 @@ class GoeCharger:
             auto = 0
             one = 1
             three = 2
+
+        class CableLockMode(Enum):
+            unlockcarfirst = 0
+            automatic = 1
+            locked = 2
 
     def __init__(self, host: str, timeout: Optional[float] = 3.0) -> None:
         """
@@ -486,3 +502,11 @@ class GoeCharger:
         # set value
         self.__set_key("ama", value)
 
+    def set_cable_lock_mode(self, value: SettableValueEnum.CableLockMode) -> None:
+        """
+        Sets cable lock mode
+
+        :param value: cable lock mode to set
+        :return:
+        """
+        self.__set_key("ust", value.value)

@@ -93,6 +93,22 @@ charger.set_phase_mode(charger.SettableValueEnum.PhaseMode.auto)
 charger.set_absolute_max_current(10)
 ````
 
+### Set cable lock mode
+````python
+from goecharger_api_lite import GoeCharger
+
+charger = GoeCharger("192.168.1.150") # --> change to your IP
+
+# set to require unlocking the car first
+charger.set_cable_lock_mode(charger.SettableValueEnum.CableLockMode.unlockcarfirst)
+
+# set to automatically unlock after charging
+charger.set_cable_lock_mode(charger.SettableValueEnum.CableLockMode.automatic)
+
+# set to always lock the cable
+charger.set_cable_lock_mode(charger.SettableValueEnum.CableLockMode.locked)
+````
+
 ### Set Generic API Key
 ````python
 from goecharger_api_lite import GoeCharger
