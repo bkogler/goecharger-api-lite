@@ -439,6 +439,13 @@ class GoeCharger:
         """
         return self.__get_status("ust")
 
+    def get_charge_limit(self) -> Dict[str, float | None]:
+        """
+        Returns charge limit in Wh or null if disabled
+        :return:
+        """
+        return self.__get_status("dwo")
+
     def set_key(self, key: str, value: Any) -> None:
         """
         Generic (low-level) function for setting a GoeCharger key to a value.
