@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='goecharger-api-lite',
-    version='1.5.0',
+    version='1.5.1',
     packages=['goecharger_api_lite'],
     url='https://github.com/bkogler/goecharger-api-lite',
     license='MIT',

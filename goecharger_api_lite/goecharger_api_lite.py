@@ -73,6 +73,12 @@ class GoeCharger:
             2: "three"
         }
 
+        __mappings_ust = {
+            0 : "unlock car first",
+            1 : "automatic",
+            2 : "locked"
+        }
+
         __mappings_var = {
             11: "11KW/16A",
             22: "22KW/32A"
@@ -141,6 +147,9 @@ class GoeCharger:
                 case "car":
                     return "car_state", cls.__mappings_car[value]
 
+                case "dwo":
+                    return "charge_limit", value
+
                 # error code
                 case "err":
                     return "error", cls.__mappings_err[value]
@@ -185,6 +194,10 @@ class GoeCharger:
                 case "tma":
                     return "temperature", sum(value)/len(value) if len(value) > 0 else None
 
+                # cable_lock_mode
+                case "ust":
+                    return "cable_lock_mode", cls.__mappings_ust[value]
+
                 # device model (11KW / 22KW)
                 case "var":
                     return "device_model", cls.__mappings_var[value]
@@ -206,12 +219,15 @@ class GoeCharger:
     # default status
     STATUS_DEFAULT = (
         "acu",  # ampere
+        "ama",  # ampere_max_limit
         "car",  # car_state
+        "dwo",  # charge_limit
         "err",  # error_code
         "frc",  # charging_mode
         "nrg",  # energy
         "psm",  # phase_mode
         "tma",  # temperature
+        "ust",  # cable_lock_mode
         "var",  # device_model
     )
 
@@ -226,8 +242,14 @@ class GoeCharger:
             on = 2
 
         class PhaseMode(Enum):
+            auto = 0
             one = 1
             three = 2
+
+        class CableLockMode(Enum):
+            unlockcarfirst = 0
+            automatic = 1
+            locked = 2
 
     def __init__(self, host: str, timeout: Optional[float] = 3.0) -> None:
         """
@@ -403,6 +425,27 @@ class GoeCharger:
         """
         return self.__get_status("psm")
 
+    def get_absolute_max_current(self) -> Dict[str, int]:
+        """
+        Returns absolute maximum current setting for the device in Ampere
+        :return:
+        """
+        return self.__get_status("ama")
+
+    def get_cable_lock_mode(self) -> Dict[str, SettableValueEnum.CableLockMode]:
+        """
+        Returns cable lock mode
+        :return:
+        """
+        return self.__get_status("ust")
+
+    def get_charge_limit(self) -> Dict[str, float | None]:
+        """
+        Returns charge limit in Wh or null if disabled
+        :return:
+        """
+        return self.__get_status("dwo")
+
     def set_key(self, key: str, value: Any) -> None:
         """
         Generic (low-level) function for setting a GoeCharger key to a value.
@@ -451,9 +494,62 @@ class GoeCharger:
 
     def set_phase_mode(self, value: SettableValueEnum.PhaseMode) -> None:
         """
-        Sets phase mode to 1 or 3 phase(s)
+        Sets phase mode to auto, 1 or 3 phase(s)
 
         :param value: phase mode to set
         :return:
         """
         self.__set_key("psm", value.value)
+
+    def set_absolute_max_current(self, value: int | str) -> None:
+        """
+        Sets absolute maximum current setting for the device in Ampere
+
+        :param value: integer value between 0 and ampere_device_maximum (16 / 32)
+        :return:
+        """
+
+        # check data type of parameter
+        if not isinstance(value, int):
+            try:
+                value = int(value)
+            except ValueError:
+                raise GoeChargerError("Ampere value needs to be an integer")
+
+        if not self.__device_model:
+            self.__device_model = self.get_status("var")["device_model"]
+
+        # check for 32A values on 16A devices
+        if self.__device_model.find("11") != -1 and value > 16:
+            raise GoeChargerError(
+                f"Ampere value of '{value}' too big for charger device_model '{self.__device_model}'")
+
+        # set value
+        self.__set_key("ama", value)
+
+    def set_cable_lock_mode(self, value: SettableValueEnum.CableLockMode) -> None:
+        """
+        Sets cable lock mode
+
+        :param value: cable lock mode to set
+        :return:
+        """
+        self.__set_key("ust", value.value)
+
+    def set_charge_limit(self, chargeLimit: float | str | None) -> None:
+        """
+        Sets charge limit in Wh or null to disable charge limit
+
+        :param value: charge limit to set in Wh
+        :return:
+        """
+
+        # check data type of parameter
+        if not isinstance(chargeLimit, float):
+            if chargeLimit is not None:
+                try:
+                    chargeLimit = float(chargeLimit)
+                except ValueError:
+                    raise GoeChargerError("Wh needs to be an integer")
+
+        self.__set_key("dwo", chargeLimit)

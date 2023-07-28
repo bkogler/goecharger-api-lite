@@ -85,6 +85,42 @@ charger.set_ampere(13)
 # set to 3 phases, 16 ampere
 charger.set_phase_mode(charger.SettableValueEnum.PhaseMode.three)
 charger.set_ampere(16)
+
+# set phase mode to auto
+charger.set_phase_mode(charger.SettableValueEnum.PhaseMode.auto)
+
+# set maximum possible charge rate of the charger (ampere)
+# this will limit the maximum charge rate that can be set by the user, i.e. via the app
+charger.set_absolute_max_current(10)
+````
+
+### Set cable lock mode
+````python
+from goecharger_api_lite import GoeCharger
+
+charger = GoeCharger("192.168.1.150") # --> change to your IP
+
+# set to require unlocking the car first
+charger.set_cable_lock_mode(charger.SettableValueEnum.CableLockMode.unlockcarfirst)
+
+# set to automatically unlock after charging
+charger.set_cable_lock_mode(charger.SettableValueEnum.CableLockMode.automatic)
+
+# set to always lock the cable
+charger.set_cable_lock_mode(charger.SettableValueEnum.CableLockMode.locked)
+````
+
+### Set charge limit
+````python
+from goecharger_api_lite import GoeCharger
+
+charger = GoeCharger("192.168.1.150") # --> change to your IP
+
+# set charge limit to 2.5 kWh
+charger.set_charge_limit(2500)
+
+# Disable charge limit
+charger.set_charge_limit(None)
 ````
 
 ### Set Generic API Key
